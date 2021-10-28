@@ -7,21 +7,31 @@
 
 import SwiftUI
 import SafariServices
+import WebKit
 
 struct ContentView: View {
     @State var showSafari = false
-    @State var urlString = "https://www.bekk.no"
+    @State var showWebView = false
+    @State var url = "https://www.bekk.no"
     
     var body: some View {
         Button(action: {
-            self.urlString = "https://www.bekk.no"
             self.showSafari = true
         }) {
-            Text("Bekk")
+            Text("Safari View Controller")
         }
         // summon the Safari sheet
         .sheet(isPresented: $showSafari) {
-            SafariView(url:URL(string: self.urlString)!)
+            SafariView(url:URL(string: url)!)
+        }
+        Button(action: {
+            self.showWebView = true
+        }) {
+            Text("WebView")
+        }
+        // summon the Safari sheet
+        .sheet(isPresented: $showWebView) {
+            WebView(request: URLRequest(url: URL(string: url)!))
         }
     }
 }
@@ -33,7 +43,6 @@ struct ContentView_Previews: PreviewProvider {
 }
 
 struct SafariView: UIViewControllerRepresentable {
-    
     let url: URL
     
     func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
@@ -41,7 +50,17 @@ struct SafariView: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
-        
+    }
+}
+
+struct WebView : UIViewRepresentable {
+    let request: URLRequest
+    
+    func makeUIView(context: Context) -> WKWebView  {
+        return WKWebView()
     }
     
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        uiView.load(request)
+    }
 }
